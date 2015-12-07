@@ -68,7 +68,8 @@ class BLMD_Git_Updater {
 						)
 					);
 					
-				} );
+				});
+				continue;
 				$screen = get_current_screen();
 				$update_info = false;
 				if ($screen->id != 'update-core') {
@@ -83,17 +84,13 @@ class BLMD_Git_Updater {
 						$update_info = (object)array(
 							'slug' => dirname( $plugin_file ),
 							'new_version' => substr( preg_replace( '/^([^a-z0-9]+)/', '', $r ), 0, 8 ),
-							// 'url' => 'https://github.com/blmd/'.md5($plugin_file),
-							// 'package' => 'https://github.com/blmd/'.md5($plugin_file).'.zip',
 						);
 					}
 					set_transient( md5( $plugin_file."_update_info" ), $update_info, 3600*12 );
 				}
 
-
 				if ( !empty( $update_info ) ) { $var->response[$plugin_file] = $update_info; }
-
-
+				
 			}
 		}
 		return $var;	
