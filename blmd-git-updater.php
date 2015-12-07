@@ -109,7 +109,8 @@ class BLMD_Git_Updater {
 	}
 	
 	public function git_updater() {
-		if (empty($_REQUEST['plugin_file'])) { wp_die("No plugin specified.")}
+		if ( empty( $_REQUEST['plugin_file'] ) ) { wp_die( "No plugin specified." ); }
+
 		$plugin_file = stripslashes($_REQUEST['plugin_file']);
 		$v = dirname($plugin_file);
 		$dir = WP_PLUGIN_DIR.'/'.escapeshellcmd($v);
