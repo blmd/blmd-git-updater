@@ -110,10 +110,13 @@ class BLMD_Git_Updater {
 	
 	public function git_updater() {
 		if ( empty( $_REQUEST['plugin_file'] ) ) { wp_die( "No plugin specified." ); }
-
 		$plugin_file = stripslashes($_REQUEST['plugin_file']);
-		$v = dirname($plugin_file);
-		$dir = WP_PLUGIN_DIR.'/'.escapeshellcmd($v);
+
+		if ( substr_count( $_REQUEST['plugin_file'], '/' ) != 1 ) { wp_die( "Bad plugin file." ); }
+		list($plugin_dir, $_) = explode('/', $plugin_file, 2);
+		$dir = WP_PLUGIN_DIR.'/'.preg_replace( '/\.+/', '', $plugin_dir );
+		if ( !is_dir( $dir ) ) { wp_die( "Bad plugin dir." ); }
+		if ( !is_dir( "{$dir}/.git" ) ) { wp_die( "Not under git control." ); }
 		chdir($dir);
 	
 		$r = `pwd; ls -alkh $dir`."\n";
