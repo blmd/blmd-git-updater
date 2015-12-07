@@ -59,7 +59,7 @@ class BLMD_Git_Updater {
 					return array_merge(
 					$links,
 						array(
-							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=git-plugin-updater&plugin_file='.urlencode($plugin_file).'">Git</a>',
+							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=blmd-git-updater&plugin_file='.urlencode($plugin_file).'">Git</a>',
 						)
 					);
 				});
@@ -109,6 +109,7 @@ class BLMD_Git_Updater {
 	}
 	
 	public function git_updater() {
+		if (empty($_REQUEST['plugin_file'])) { wp_die("No plugin specified.")}
 		$plugin_file = stripslashes($_REQUEST['plugin_file']);
 		$v = dirname($plugin_file);
 		$dir = WP_PLUGIN_DIR.'/'.escapeshellcmd($v);
