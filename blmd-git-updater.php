@@ -59,7 +59,7 @@ class BLMD_Git_Updater {
 					return array_merge(
 					$links,
 						array(
-							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=git-plugin-update&plugin_file='.urlencode($plugin_file).'">Git</a>',
+							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=git-plugin-updater&plugin_file='.urlencode($plugin_file).'">Git</a>',
 						)
 					);
 				});
