@@ -5,11 +5,11 @@ Plugin URI: https://github.com/blmd/blmd-git-updater
 Description: Allow git updates
 Author: blmd
 Author URI: https://github.com/blmd
-Version: 0.1
+Version: 0.3
 */
 
 !defined( 'ABSPATH' ) && die;
-define( 'BLMD_GIT_UPDATER_VERSION', '0.1' );
+define( 'BLMD_GIT_UPDATER_VERSION', '0.3' );
 define( 'BLMD_GIT_UPDATER_URL', plugin_dir_url( __FILE__ ) );
 define( 'BLMD_GIT_UPDATER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BLMD_GIT_UPDATER_BASENAME', plugin_basename( __FILE__ ) );
@@ -28,11 +28,12 @@ class BLMD_Git_Updater {
 
 	protected function setup_actions() {
 		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'admin_menu', array( $this, 'add_git' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 	}
 
 	protected function setup_filters() {
-		add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
+		// add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
 	}
 	
 	public function admin_menu() {
@@ -43,6 +44,27 @@ class BLMD_Git_Updater {
 			'blmd-git-updater',
 			array( $this, 'git_updater' )
 		);
+	}
+	
+	public function add_git() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugins = get_plugins();
+		foreach ( array_keys( $plugins ) as $plugin_file ) {
+			if ( strpos( $plugin_file, '/' ) === false ) { continue; } // single file
+			$plugin_dirname = dirname( WP_PLUGIN_DIR.'/'.$plugin_file );
+			if ( is_dir( "{$plugin_dirname}/.git" ) ) {
+				add_filter( "plugin_action_links_{$plugin_file}", function($links) use($plugin_file){
+					return array_merge(
+					$links,
+						array(
+							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=git-plugin-update&plugin_file='.urlencode($plugin_file).'">Git</a>',
+						)
+					);
+				});
+			}
+		}		
 	}
 	
 	public function site_transient_update_plugins( $var ) {
@@ -60,16 +82,6 @@ class BLMD_Git_Updater {
 
 			$plugin_dirname = dirname( WP_PLUGIN_DIR.'/'.$plugin_file );
 			if ( is_dir( "{$plugin_dirname}/.git" ) ) {
-				add_filter( "plugin_action_links_{$plugin_file}", function($links) use($plugin_file){
-					return array_merge(
-					$links,
-						array(
-							'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/tools.php?page=git-plugin-update&plugin_file='.urlencode($plugin_file).'">Git</a>',
-						)
-					);
-					
-				});
-				continue;
 				$screen = get_current_screen();
 				$update_info = false;
 				if ($screen->id != 'update-core') {
