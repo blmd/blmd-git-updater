@@ -27,7 +27,7 @@ class BLMD_Git_Updater {
 	}
 
 	protected function setup_actions() {
-		add_action( 'init', array( $this, 'init' ) );
+		// add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_menu', array( $this, 'add_git' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 	}
@@ -105,7 +105,7 @@ class BLMD_Git_Updater {
 				
 			}
 		}
-		return $var;	
+		return $var;
 	}
 	
 	public function git_updater() {
