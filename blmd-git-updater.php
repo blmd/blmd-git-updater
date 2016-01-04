@@ -69,7 +69,9 @@ class BLMD_Git_Updater {
 	
 	public function site_transient_update_plugins( $var ) {
 		if ( ( !is_object( $var ) ) || empty( $var->response ) ) { return $var; }
-		if ( ( $_ = get_current_screen() ) && $_->id != 'update-core' ) { return $var; }
+		$screen = get_current_screen();
+		if ( !$screen || $screen->id != 'update-core' ) { return $var; }
+
 
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
