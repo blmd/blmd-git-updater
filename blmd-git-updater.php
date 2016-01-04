@@ -33,7 +33,7 @@ class BLMD_Git_Updater {
 	}
 
 	protected function setup_filters() {
-		// add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
+		add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
 	}
 	
 	public function admin_menu() {
@@ -69,6 +69,8 @@ class BLMD_Git_Updater {
 	
 	public function site_transient_update_plugins( $var ) {
 		if ( ( !is_object( $var ) ) || empty( $var->response ) ) { return $var; }
+		if ( ( $_ = get_current_screen() ) && $_->id != 'update-core' ) { return $var; }
+
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -84,9 +86,9 @@ class BLMD_Git_Updater {
 			if ( is_dir( "{$plugin_dirname}/.git" ) ) {
 				$screen = get_current_screen();
 				$update_info = false;
-				if ($screen->id != 'update-core') {
-					$update_info = get_transient( md5( $plugin_file."_update_info" ) );
-				}
+				// if ($screen->id != 'update-core') {
+				// 	$update_info = get_transient( md5( $plugin_file."_update_info" ) );
+				// }
 				if ( $update_info === false ) {
 					chdir( $plugin_dirname );
 					`GIT_SSH_COMMAND='ssh -i /srv/www/.ssh/id_rsa_git' git fetch 2>&1`;
@@ -98,7 +100,7 @@ class BLMD_Git_Updater {
 							'new_version' => substr( preg_replace( '/^([^a-z0-9]+)/', '', $r ), 0, 8 ),
 						);
 					}
-					set_transient( md5( $plugin_file."_update_info" ), $update_info, 3600*12 );
+					// set_transient( md5( $plugin_file."_update_info" ), $update_info, 3600*12 );
 				}
 
 				if ( !empty( $update_info ) ) { $var->response[$plugin_file] = $update_info; }
