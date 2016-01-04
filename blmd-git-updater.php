@@ -72,7 +72,6 @@ class BLMD_Git_Updater {
 		$screen = get_current_screen();
 		if ( !$screen || $screen->id != 'update-core' ) { return $var; }
 
-
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -112,7 +111,24 @@ class BLMD_Git_Updater {
 		return $var;
 	}
 	
+	public function git_installer() {
+		if ( ! current_user_can( 'manage_options' ) ) { wp_die( "Unauthorized." );}
+		if ( empty( $_REQUEST['plugin_git_url'] ) ) { wp_die( "No plugin git url specified." ); }
+		$plugin_git_url = stripslashes( $_REQUEST['plugin_git_url'] );
+		
+		// if (strpos($plugin_git_url, 'git@bitbucket.org:blmd/'))
+
+		chdir( WP_PLUGIN_DIR );
+		$r = `pwd; ls -alkh $dir`."\n";
+		$r .= `stat -c '%U' .git`."\n";
+		// $r .= getenv('SSH_AUTH_SOCK')."\n";
+	
+		$r .= `GIT_SSH_COMMAND='ssh -i /srv/www/.ssh/id_rsa_git' git ls-remote --get-url`."\n";
+		wp_die("Installed");
+	}
+	
 	public function git_updater() {
+		if ( !empty( $_REQUEST['plugin_git_url'] ) ) { return $this->git_installer(); }
 		if ( empty( $_REQUEST['plugin_file'] ) ) { wp_die( "No plugin specified." ); }
 		$plugin_file = stripslashes($_REQUEST['plugin_file']);
 
