@@ -23,7 +23,6 @@ if ( class_exists( 'WP_CLI_Command' ) ):
 	 *
 	 *     wp blmd-git pull
 	 *
-	 * @synopsis <path>
 	 */
 	public function pull( $args, $assoc_args ) {
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -36,6 +35,7 @@ if ( class_exists( 'WP_CLI_Command' ) ):
 		$all_plugins = get_plugins();
 		foreach ( array_keys( $all_plugins ) as $plugin_file ) {
 			$full_path = plugin_dir_path( WP_PLUGIN_DIR.'/'.$plugin_file );
+			WP_CLI::log( "$full_path <> $cur_dir" );
 			if ( $full_path == $cur_dir ) {
 				$blmd_git_updater = BLMD_Git_Updater();
 				$_REQUEST['plugin_file'] = addslashes( $plugin_file );
