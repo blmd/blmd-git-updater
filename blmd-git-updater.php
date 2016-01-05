@@ -31,11 +31,26 @@ if ( class_exists( 'WP_CLI_Command' ) ):
 	 * @synopsis <path>
 	 */
 	public function update( $args, $assoc_args ) {
-		$blmd_git_updater = BLMD_Git_Updater();
-		$blmd_git_updater->git_updater();
-		
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$cur_dir = getcwd();
+		if ( !is_dir( "$cur_dir/.git" ) ) {
+			WP_CLI::error( "'$cur_dir' is not a git repository." );
+		}
+		$all_plugins = get_plugins();
+		foreach ( array_keys( $all_plugins ) as $plugin_file ) {
+			$full_path = plugin_dir_path( WP_PLUGIN_DIR.$plugin_file );
+			if ( $full_path == $cur_dir ) {
+				$blmd_git_updater = BLMD_Git_Updater();
+				$_REQUEST['plugin_file'] = addslashes( $plugin_file );
+				$blmd_git_updater->git_updater();
+				break;
+			}
+		}
 	}
-}
+
+};
 endif;
 
 class BLMD_Git_Updater {
