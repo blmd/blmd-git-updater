@@ -14,6 +14,30 @@ define( 'BLMD_GIT_UPDATER_URL', plugin_dir_url( __FILE__ ) );
 define( 'BLMD_GIT_UPDATER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BLMD_GIT_UPDATER_BASENAME', plugin_basename( __FILE__ ) );
 
+if ( class_exists( 'WP_CLI_Command' ) ):
+	class BLMD_Git_Command extends WP_CLI_Command {
+	/**
+	 * Updates a git repository.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <path>
+	 * : The path to the repository.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp blmd-git update
+	 *
+	 * @synopsis <path>
+	 */
+	public function update( $args, $assoc_args ) {
+		$blmd_git_updater = BLMD_Git_Updater();
+		$blmd_git_updater->git_updater();
+		
+	}
+}
+endif;
+
 class BLMD_Git_Updater {
 
 	public static function factory() {
@@ -22,6 +46,9 @@ class BLMD_Git_Updater {
 			$instance = new self;
 			$instance->setup_actions();
 			$instance->setup_filters();
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
+				$instance->setup_cli();
+			}
 		}
 		return $instance;
 	}
@@ -35,6 +62,11 @@ class BLMD_Git_Updater {
 	protected function setup_filters() {
 		add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
 	}
+	
+	protected function setup_cli() {
+		WP_CLI::add_command( 'blmd-git', 'BLMD_Git_Command' );
+	}
+
 	
 	public function admin_menu() {
 		add_management_page(
