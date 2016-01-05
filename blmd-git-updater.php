@@ -19,18 +19,13 @@ if ( class_exists( 'WP_CLI_Command' ) ):
 	/**
 	 * Updates a git repository.
 	 *
-	 * ## OPTIONS
-	 *
-	 * <path>
-	 * : The path to the repository.
-	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp blmd-git update
+	 *     wp blmd-git pull
 	 *
 	 * @synopsis <path>
 	 */
-	public function update( $args, $assoc_args ) {
+	public function pull( $args, $assoc_args ) {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -40,7 +35,7 @@ if ( class_exists( 'WP_CLI_Command' ) ):
 		}
 		$all_plugins = get_plugins();
 		foreach ( array_keys( $all_plugins ) as $plugin_file ) {
-			$full_path = plugin_dir_path( WP_PLUGIN_DIR.$plugin_file );
+			$full_path = plugin_dir_path( WP_PLUGIN_DIR.'/'.$plugin_file );
 			if ( $full_path == $cur_dir ) {
 				$blmd_git_updater = BLMD_Git_Updater();
 				$_REQUEST['plugin_file'] = addslashes( $plugin_file );
