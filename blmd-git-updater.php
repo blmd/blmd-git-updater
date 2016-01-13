@@ -111,6 +111,9 @@ class BLMD_Git_Updater {
 	
 	public function site_transient_update_plugins( $var ) {
 		if ( ( !is_object( $var ) ) || empty( $var->response ) ) { return $var; }
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			require_once(ABSPATH . 'wp-admin/includes/screen.php');
+		}
 		$screen = get_current_screen();
 		if ( !$screen || $screen->id != 'update-core' ) { return $var; }
 
